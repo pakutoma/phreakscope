@@ -13,5 +13,9 @@
             "name": "pakutoma",
             "email": "tairi0717@gmail.com"
         }
-    ]
+    ],
+    "require": {
+        "ext-zlib": "*",
+        "ext-xhprof": ">=2"
+    }
 }
