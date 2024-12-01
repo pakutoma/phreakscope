@@ -3,7 +3,7 @@
 namespace Pakutoma\Phreakscope;
 
 use FilesystemIterator;
-use pprof\XhprofConverter;
+use Pakutoma\Phreakscope\pprof\XhprofConverter;
 
 class ProfileEndpoint
 {
