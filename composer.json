@@ -1,0 +1,17 @@
+{
+    "name": "pakutoma/phreakscope",
+    "description": "A PHP library to send xhprof profile to pyroscope.",
+    "type": "library",
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "Pakutoma\\Phreakscope\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "pakutoma",
+            "email": "tairi0717@gmail.com"
+        }
+    ]
+}
