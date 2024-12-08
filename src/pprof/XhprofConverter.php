@@ -60,6 +60,7 @@ class XhprofConverter
 
                 $xhprof_sample = $current_xhprof_sample;
                 $info_pos = strrpos($xhprof_sample, '#');
+                $info = '';
                 if ($info_pos !== false) {
                     $call_tree = substr($xhprof_sample, 0, $info_pos);
                     $info = substr($xhprof_sample, $info_pos + 1);
@@ -68,7 +69,7 @@ class XhprofConverter
                     $call_tree = $xhprof_sample;
                     $labels = [];
                 }
-                $locations = $this->extractLocations($call_tree);
+                $locations = $this->extractLocations($call_tree, $info);
                 $samples[] = new Sample(
                     $locations,
                     [$elapsed_time],
@@ -87,7 +88,7 @@ class XhprofConverter
      *
      * @return Location[]
      */
-    private function extractLocations(string $call_tree): array
+    private function extractLocations(string $call_tree, string $info): array
     {
         $function_names = explode('==>', $call_tree);
         $locations = [];
@@ -97,9 +98,9 @@ class XhprofConverter
                     $reflection_function = $this->getReflection($function_name);
                     if ($reflection_function instanceof ReflectionMethod) {
                         $class_name = $reflection_function->getDeclaringClass()->getName();
-                        $long_function_name = $class_name . '::' . $reflection_function->getName();
+                        $long_function_name = $class_name . '::' . $reflection_function->getName() . ($info ? '#' . $info : '');
                     } else {
-                        $long_function_name = $reflection_function->getName();
+                        $long_function_name = $reflection_function->getName() . ($info ? '#' . $info : '');
                     }
                     $this->functions[$function_name] = new FunctionInfo(
                         $long_function_name,
