@@ -91,6 +91,7 @@ class XhprofConverter
     private function extractLocations(string $call_tree, string $info): array
     {
         $function_names = explode('==>', $call_tree);
+        $function_names[] = $info;
         $locations = [];
         foreach ($function_names as $function_name) {
             if (!isset($this->functions[$function_name])) {
@@ -98,9 +99,9 @@ class XhprofConverter
                     $reflection_function = $this->getReflection($function_name);
                     if ($reflection_function instanceof ReflectionMethod) {
                         $class_name = $reflection_function->getDeclaringClass()->getName();
-                        $long_function_name = $class_name . '::' . $reflection_function->getName() . ($info ? '#' . $info : '');
+                        $long_function_name = $class_name . '::' . $reflection_function->getName();
                     } else {
-                        $long_function_name = $reflection_function->getName() . ($info ? '#' . $info : '');
+                        $long_function_name = $reflection_function->getName();
                     }
                     $this->functions[$function_name] = new FunctionInfo(
                         $long_function_name,
