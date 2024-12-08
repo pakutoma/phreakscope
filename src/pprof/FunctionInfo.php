@@ -2,7 +2,7 @@
 
 namespace Pakutoma\Phreakscope\pprof;
 
-use Pakutoma\Phreakscope\protobuf\Profiles\PBFunction;
+use Pakutoma\Phreakscope\protobuf\profiles\PBFunction;
 
 class FunctionInfo
 {
