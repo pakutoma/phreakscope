@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use logic\ProfileEndpoint;
+use Pakutoma\Phreakscope\ProfileEndpoint;
 
 require_once(__DIR__ . '/vendor/autoload.php');
 
