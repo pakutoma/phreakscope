@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  php-fpm:
+    build:
+      context: ..
+      dockerfile: docker/php-fpm.Dockerfile
+    volumes:
+      - ../demo:/var/www/html
+      - phreakscope-socket:/var/run
+    environment:
+      PHREAKSCOPE_SOCKET: /var/run/phreakscope.sock
+      PHREAKSCOPE_LABELS: service=demo,instance=docker
+    depends_on:
+      - phreakscope-agent
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ../demo:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php-fpm
+
+  phreakscope-agent:
+    build:
+      context: ..
+      dockerfile: docker/agent.Dockerfile
+    volumes:
+      - phreakscope-socket:/var/run
+    command: >
+      /usr/local/bin/phreakscope-agent 
+      --listen=/var/run/phreakscope.sock 
+      --pyro.url=http://pyroscope:4040 
+      --interval=30s
+    depends_on:
+      - pyroscope
+
+  pyroscope:
+    image: grafana/pyroscope:latest
+    ports:
+      - "4040:4040"
+    environment:
+      PYROSCOPE_LOG_LEVEL: debug
+    command: >
+      --config.file=/etc/pyroscope/server.yml
+      --target=all
+      --server.http-listen-port=4040
+      --store-gateway.backend=filesystem
+      --store-gateway.filesystem.dir=/data
+    volumes:
+      - pyroscope-data:/data
+
+volumes:
+  phreakscope-socket:
+  pyroscope-data:

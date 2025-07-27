@@ -1,0 +1,56 @@
+name: Build C Extension
+
+on:
+  push:
+    branches: [ main, feat/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-extension:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.1', '8.2', '8.3']
+    
+    name: PHP ${{ matrix.php-version }} Extension Build
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: none
+        tools: none
+        coverage: none
+      env:
+        phpts: ts
+    
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential autoconf php${{ matrix.php-version }}-dev
+    
+    - name: Build extension
+      run: |
+        cd ext/phreakscope
+        phpize
+        ./configure
+        make -j$(nproc)
+        
+    - name: Test extension loading
+      run: |
+        cd ext/phreakscope
+        php -d extension=./modules/phreakscope.so -m | grep phreakscope
+        
+    - name: Run basic functionality test
+      run: |
+        cd ext/phreakscope
+        php -d extension=./modules/phreakscope.so -r "
+          phreakscope_start();
+          sleep(1);
+          phreakscope_stop();
+          echo 'Extension test passed\n';
+        "
